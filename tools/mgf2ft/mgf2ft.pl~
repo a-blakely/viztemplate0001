@@ -1,0 +1,100 @@
+#!/usr/bin/perl -w                 
+
+open (IN, "<$ARGV[0]");
+open (OUT, ">$ARGV[1]");
+
+my ($scan, $pepmass, $charge, $pepmoz, @moz, @intensity, $switch, $i, $istart, $id, $iend, $ichange, $arrayindex, $loop);
+
+$switch = 0;
+$i = 0;
+$id = 0;
+$istart = 0;
+
+
+while (<IN>) {
+    if (/BEGIN/) {
+	$switch = 1;
+	$istart = $i + 4;
+	
+
+    }
+    if ($switch){
+
+	if (/(?s)PEPMASS=(.*)/) {
+	    $pepmass = $1 if defined $1;
+
+	}
+	if (/(?s)CHARGE=(.)\+|-/) {
+	    $charge = $1 if defined $1;
+
+	
+	}
+	if (/(?s)(\d*.\d*)[ ](\d*[.]\d*)/) {
+	    $moz[$i] = $1 if defined $1;
+	    $intensity[$i] = $2 if defined $2;
+
+	}
+	if (/(?s)SCANS=(\d*)/){
+	    $scan = $1 if defined $1;
+
+
+	}
+	if (/END/) {
+	$switch = 0;
+	$loop = $istart;
+	$iend = $i - 1;
+	$ichange = $iend - $istart;
+	
+	
+	print OUT "{\n";
+	print OUT "\"id\" : ";
+	print OUT $id;
+	print OUT ",\n";
+
+
+	print OUT "\"mozs\" : \[";
+       
+	while ($loop <= $iend) {
+	    print OUT $moz[$loop];
+	    print OUT ",";
+	    $loop = $loop + 1;
+	}
+	print OUT "\]\n";
+	$loop = $istart;
+
+
+	print OUT "\"intensities\" : \[";
+	while ($loop <= $iend) {
+	    print OUT $intensity[$loop];
+	    print OUT ",";
+	    $loop = $loop + 1;
+	}
+	print OUT "\]\n";
+	$arrayindex = 0;
+
+	$pepmoz = $pepmass / $charge;
+	print OUT "\"precMoz\" : ";
+	print OUT $pepmoz;
+	print OUT "\n";
+	    	    
+		
+
+        print OUT "\"scanNumber\" : ";
+	print OUT $scan;
+	print OUT ",\n";
+
+	print OUT "}\n";
+    
+
+        $id = $id + 1;
+    }
+
+
+    }
+    $i = $i + 1;
+ }
+
+close (IN);
+close (OUT);
+
+    

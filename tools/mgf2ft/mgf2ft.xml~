@@ -1,0 +1,31 @@
+
+<tool id="mgf2ft" name="MGF to fishTones">
+
+    <description>Converts an MGF file to a format usable by the fishTones spectra viewer. </description>
+
+    <command interpreter="perl">mgf2ftjson.pl $input $pep $output </command>
+
+    <inputs>
+
+	<param format="mgf" name="input" type="data" label="MGF file containing spectra to be visualized."/>
+	<param format="tabular" name="pep" type="data" label="Peptide Sumarry"/>
+
+    </inputs>
+
+    <outputs>
+        <data format="tabular" name="output" />
+    </outputs>
+  <tests>
+    <test>
+      <param name="input" value="mgf2ft_input.mgf"/>
+      <param name="pep" value="pep.tab"/>
+      <output name="out_file1" file="mgf2ft_output.json"/>
+    </test>
+  </tests>
+
+<help>
+Converts an MGF file to a format usable by the fishTones spectra viewer.
+
+</help>
+
+</tool>
